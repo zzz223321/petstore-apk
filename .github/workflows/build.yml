@@ -29,11 +29,10 @@ jobs:
           echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-31" "build-tools;31.0.0"
-          # 创建旧路径符号链接，让 Buildozer 找到 sdkmanager
           mkdir -p $ANDROID_SDK_ROOT/tools/bin
           ln -s $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager $ANDROID_SDK_ROOT/tools/bin/sdkmanager
       - name: Build APK
-        run: buildozer android debug
+        run: buildozer android debug --verbose
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
