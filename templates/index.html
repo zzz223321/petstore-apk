@@ -124,6 +124,9 @@
         }
         .empty-state i { font-size: 2.5rem; margin-bottom: 8px; opacity: 0.4; }
         .stock-actions { display: flex; gap: 6px; }
+        .hint {
+            font-size: 0.8rem; color: #e67e22; margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -269,7 +272,11 @@
     <div class="modal-overlay" v-if="showPetForm" @click.self="showPetForm=false">
         <div class="modal-box">
             <h3>添加活体宠物</h3>
-            <select v-model="petForm.product_id">
+            <!-- 如果没有任何宠物品种，显示提示 -->
+            <div v-if="petProducts.length === 0" class="hint">
+                ⚠️ 还没有宠物品种，请先在“商品管理”中添加一个类型为“活体宠物（品种）”的商品（如“金毛”）。
+            </div>
+            <select v-model="petForm.product_id" v-else>
                 <option disabled value="">选择品种</option>
                 <option v-for="p in petProducts" :value="p.id">{{ p.name }}</option>
             </select>
@@ -410,7 +417,7 @@
                 await axios.delete('/api/products/'+id);
                 this.loadPageData();
             },
-            // 修正后的 openPetForm：确保先加载商品列表
+            // 打开活体表单前先加载商品列表
             async openPetForm() {
                 try {
                     let res = await axios.get('/api/products');
