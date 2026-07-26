@@ -2,6 +2,7 @@
 title = 宠物店管家
 package.name = petstore
 package.domain = com.example
+version = 1.0
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,html,css,js,json
 requirements = python3,kivy,flask,sqlite3,kivy_garden.xwalk
