@@ -17,5 +17,5 @@ android.accept_sdk_license = True
 android.sdk_path = /home/runner/android-sdk
 android.skip_update = True
 android.bootstrap = sdl2
-log_level = 2
 android.extra_p4a_args = --no-ffi
+log_level = 2
