@@ -1,0 +1,15 @@
+[app]
+title = 宠物店管家
+package.name = petstore
+package.domain = com.example
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas,html,css,js,json
+requirements = python3,kivy,flask,sqlite3,kivy_garden.xwalk
+garden_requirements = xwalk
+orientation = portrait
+android.permissions = INTERNET
+android.api = 31
+android.minapi = 21
+android.ndk = 23b
+android.sdk = 31
+p4a.branch = master
