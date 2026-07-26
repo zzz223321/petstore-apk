@@ -410,7 +410,16 @@
                 await axios.delete('/api/products/'+id);
                 this.loadPageData();
             },
-            openPetForm() { this.loadPageData(); this.showPetForm = true; },
+            // 修正后的 openPetForm：确保先加载商品列表
+            async openPetForm() {
+                try {
+                    let res = await axios.get('/api/products');
+                    this.products = res.data;
+                    this.showPetForm = true;
+                } catch(e) {
+                    alert('加载商品失败');
+                }
+            },
             async savePet() {
                 if (!this.petForm.product_id) return alert('请选择品种');
                 try {
