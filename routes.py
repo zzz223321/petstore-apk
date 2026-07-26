@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, send_from_directory
 from db import get_db
-import uuid
+import sqlite3
 from datetime import datetime
 
 api = Blueprint('api', __name__)
@@ -9,7 +9,6 @@ api = Blueprint('api', __name__)
 def index():
     return render_template('index.html')
 
-# 静态文件（用于 PWA）
 @api.route('/static/<path:filename>')
 def static_files(filename):
     return send_from_directory('templates', filename)
@@ -66,6 +65,17 @@ def get_members():
     rows = db.execute("SELECT id,name,phone,balance,points,level FROM members").fetchall()
     return jsonify([dict(r) for r in rows])
 
+@api.route('/api/members/search', methods=['GET'])
+def search_member():
+    phone = request.args.get('phone')
+    if not phone:
+        return jsonify({'error': '缺少手机号'}), 400
+    db = get_db()
+    member = db.execute("SELECT id,name,phone,balance,points,level FROM members WHERE phone=?", (phone,)).fetchone()
+    if member:
+        return jsonify(dict(member))
+    return jsonify(None), 404
+
 @api.route('/api/members', methods=['POST'])
 def add_member():
     data = request.json
@@ -84,31 +94,6 @@ def recharge(mid):
     db.execute("UPDATE members SET balance=balance+? WHERE id=?", (amount, mid))
     db.commit()
     return jsonify({'msg': '充值成功'})
-
-@api.route('/api/members/<int:mid>/pets', methods=['GET'])
-def get_member_pets(mid):
-    db = get_db()
-    pets = db.execute("SELECT id, name, breed, birth, notes FROM member_pets WHERE member_id=?", (mid,)).fetchall()
-    return jsonify([dict(p) for p in pets])
-
-@api.route('/api/members/<int:mid>/pets', methods=['POST'])
-def bind_pet(mid):
-    data = request.json
-    db = get_db()
-    db.execute("INSERT INTO member_pets (member_id,name,breed,birth,notes) VALUES (?,?,?,?,?)",
-               (mid, data['name'], data.get('breed'), data.get('birth'), data.get('notes')))
-    db.commit()
-    return jsonify({'msg': '宠物绑定成功'}), 201
-
-@api.route('/api/members/<int:mid>/pets/<int:pid>', methods=['DELETE'])
-def delete_member_pet(mid, pid):
-    db = get_db()
-    pet = db.execute("SELECT id FROM member_pets WHERE id=? AND member_id=?", (pid, mid)).fetchone()
-    if not pet:
-        return jsonify({'error': '宠物不存在或不属于该会员'}), 404
-    db.execute("DELETE FROM member_pets WHERE id=?", (pid,))
-    db.commit()
-    return jsonify({'msg': '删除成功'})
 
 # ---------- 活体 ----------
 @api.route('/api/pet_individuals', methods=['GET'])
@@ -135,65 +120,6 @@ def update_pet_status(pid):
     db.commit()
     return jsonify({'msg': '状态已更新'})
 
-# ---------- 销售 ----------
-@api.route('/api/sale', methods=['POST'])
-def create_sale():
-    data = request.json
-    items = data.get('items', [])
-    member_phone = data.get('member_phone')
-    discount = data.get('discount', 0)
-    payment = data.get('payment', '现金')
-
-    if not items:
-        return jsonify({'error': '购物车为空'}), 400
-
-    db = get_db()
-    member = None
-    if member_phone:
-        member = db.execute("SELECT id,name,balance FROM members WHERE phone=?", (member_phone,)).fetchone()
-        if not member:
-            return jsonify({'error': '会员不存在'}), 400
-
-    total = sum(item['qty'] * item['price'] for item in items)
-    paid = total - discount
-    if paid < 0:
-        return jsonify({'error': '折扣不能大于总金额'}), 400
-
-    if payment == '会员余额':
-        if not member:
-            return jsonify({'error': '余额支付需选择会员'}), 400
-        if member['balance'] < paid:
-            return jsonify({'error': '会员余额不足'}), 400
-
-    order_no = datetime.now().strftime('%Y%m%d%H%M%S') + str(uuid.uuid4())[:6]
-    try:
-        for item in items:
-            prod = db.execute("SELECT type,stock_qty FROM products WHERE id=?", (item['product_id'],)).fetchone()
-            if prod['type'] == 'goods':
-                if prod['stock_qty'] < item['qty']:
-                    return jsonify({'error': f"商品 {prod['id']} 库存不足"}), 400
-                new_qty = prod['stock_qty'] - item['qty']
-                db.execute("UPDATE products SET stock_qty=? WHERE id=?", (new_qty, item['product_id']))
-                db.execute("INSERT INTO inventory_logs (product_id,change_qty,type,before_qty,after_qty) VALUES (?,?,?,?,?)",
-                           (item['product_id'], -item['qty'], '销售出库', prod['stock_qty'], new_qty))
-            elif prod['type'] == 'pet':
-                db.execute("UPDATE pet_individuals SET status='已售' WHERE id=?", (item['pet_individual_id'],))
-
-        if payment == '会员余额':
-            db.execute("UPDATE members SET balance=balance-? WHERE id=?", (paid, member['id']))
-
-        db.execute("INSERT INTO sales_orders (order_no,member_id,total_amount,discount,paid_amount,payment_method) VALUES (?,?,?,?,?,?)",
-                   (order_no, member['id'] if member else None, total, discount, paid, payment))
-        order_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
-        for item in items:
-            db.execute("INSERT INTO sale_items (order_id,product_id,pet_individual_id,quantity,unit_price,subtotal) VALUES (?,?,?,?,?,?)",
-                       (order_id, item['product_id'], item.get('pet_individual_id'), item['qty'], item['price'], item['qty']*item['price']))
-        db.commit()
-        return jsonify({'order_no': order_no, 'paid': paid})
-    except Exception as e:
-        db.rollback()
-        return jsonify({'error': str(e)}), 500
-
 # ---------- 库存 ----------
 @api.route('/api/inventory', methods=['GET'])
 def get_inventory():
@@ -209,3 +135,30 @@ def get_inventory():
             d['stock_qty'] = '-'
         result.append(d)
     return jsonify(result)
+
+@api.route('/api/inventory/adjust', methods=['POST'])
+def adjust_inventory():
+    data = request.json
+    product_id = data.get('product_id')
+    change_qty = data.get('change_qty')
+    type_str = data.get('type', '入库')
+
+    if not product_id or change_qty is None:
+        return jsonify({'error': '缺少参数'}), 400
+
+    db = get_db()
+    product = db.execute("SELECT * FROM products WHERE id=?", (product_id,)).fetchone()
+    if not product:
+        return jsonify({'error': '商品不存在'}), 404
+    if product['type'] != 'goods':
+        return jsonify({'error': '只能调整普通商品的库存'}), 400
+
+    new_qty = product['stock_qty'] + change_qty
+    if new_qty < 0:
+        return jsonify({'error': '库存不足，不能出库'}), 400
+
+    db.execute("UPDATE products SET stock_qty=? WHERE id=?", (new_qty, product_id))
+    db.execute("INSERT INTO inventory_logs (product_id, change_qty, type, before_qty, after_qty) VALUES (?,?,?,?,?)",
+               (product_id, change_qty, type_str, product['stock_qty'], new_qty))
+    db.commit()
+    return jsonify({'msg': '库存调整成功', 'new_qty': new_qty})
