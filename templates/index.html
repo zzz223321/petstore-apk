@@ -343,7 +343,6 @@
                 showMemberModal: false,
                 memberForm: { name:'', phone:'', amount:0 },
                 rechargeTarget: null,
-                // 库存调整
                 showStockModal: false,
                 stockTarget: null,
                 stockAction: 'in',
@@ -380,7 +379,6 @@
                     }
                 } catch(e) { console.error(e); }
             },
-            // 商品管理
             openProductForm(product=null) {
                 if (product) {
                     this.editingProduct = product;
@@ -412,7 +410,6 @@
                 await axios.delete('/api/products/'+id);
                 this.loadPageData();
             },
-            // 活体管理
             openPetForm() { this.loadPageData(); this.showPetForm = true; },
             async savePet() {
                 if (!this.petForm.product_id) return alert('请选择品种');
@@ -427,7 +424,6 @@
                 await axios.put('/api/pet_individuals/'+id+'/status', { status: '已售' });
                 this.loadPageData();
             },
-            // 会员管理
             openMemberForm() {
                 this.rechargeTarget = null;
                 this.memberForm = { name:'', phone:'', amount:0 };
@@ -448,7 +444,6 @@
                     this.loadPageData();
                 } catch(e) { alert('充值失败'); }
             },
-            // 库存调整
             openStockAdjust(item, action) {
                 this.stockTarget = item;
                 this.stockAction = action;
