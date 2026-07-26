@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, send_from_directory
 from db import get_db
 import uuid
 from datetime import datetime
@@ -8,6 +8,11 @@ api = Blueprint('api', __name__)
 @api.route('/')
 def index():
     return render_template('index.html')
+
+# 静态文件（用于 PWA）
+@api.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('templates', filename)
 
 # ---------- 商品 ----------
 @api.route('/api/products', methods=['GET'])
