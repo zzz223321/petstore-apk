@@ -10,166 +10,173 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.prod.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.min.js"></script>
     <style>
-        :root {
-            --primary: #4caf50;
-            --bg: #f5f7fa;
-            --card: #ffffff;
-            --text: #2c3e50;
-            --text-light: #7f8c8d;
-            --danger: #e74c3c;
-            --radius: 12px;
-        }
+        :root { --primary: #4caf50; --bg: #f5f7fa; --card: #fff; --text: #2c3e50; --radius: 12px; }
         * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding-bottom: 75px;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .header {
-            background: var(--primary);
-            color: white;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 75px; }
+        .header { background: var(--primary); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top:0; z-index:100; }
         .header h1 { font-size: 1.1rem; }
         .container { max-width: 600px; margin: 0 auto; padding: 12px; }
-        .card {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 14px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 10px; }
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-            padding: 10px 16px; border-radius: 25px; border: none; font-weight: 500;
-            cursor: pointer; font-size: 0.9rem; background: none; transition: 0.2s;
-        }
+        .card { background: var(--card); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-title { font-weight: 600; margin-bottom: 10px; }
+        .btn { display: inline-flex; align-items: center; gap: 4px; padding: 10px 16px; border-radius: 25px; border: none; font-weight: 500; cursor: pointer; background: none; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        .btn-danger { background: var(--danger); color: white; }
+        .btn-outline { border: 1px solid var(--primary); color: var(--primary); }
+        .btn-danger { background: #e74c3c; color: white; }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
         .btn-block { width: 100%; }
-        input, select {
-            width: 100%; padding: 10px 12px; border: 1px solid #dcdfe6;
-            border-radius: 25px; font-size: 0.9rem; background: #fafafa;
-            outline: none; transition: border 0.2s;
-        }
-        input:focus, select:focus { border-color: var(--primary); background: white; }
+        input, select { width: 100%; padding: 10px 12px; border: 1px solid #dcdfe6; border-radius: 25px; background: #fafafa; outline: none; margin-bottom: 8px; }
         .input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-        .member-tag {
-            background: #e8f5e9; border-radius: 20px; padding: 8px 14px;
-            display: flex; justify-content: space-between; margin: 8px 0;
-        }
-        .cart-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 8px 0; border-bottom: 1px solid #eee;
-        }
+        .member-tag { background: #e8f5e9; border-radius: 20px; padding: 8px 14px; display: flex; justify-content: space-between; margin: 8px 0; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
         .cart-total { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
-        .settle-bar {
-            background: white; border-radius: var(--radius); padding: 12px;
-            box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
-            display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-        }
+        .settle-bar { background: white; border-radius: var(--radius); padding: 12px; box-shadow: 0 -1px 3px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
         table { width:100%; border-collapse:collapse; font-size:0.85rem; background:white; border-radius: var(--radius); overflow:hidden; }
         th { background:#f0faf0; padding:10px 8px; text-align:left; }
         td { padding:10px 8px; border-bottom:1px solid #f0f0f0; }
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background: white;
-            display: flex; justify-content: space-around; padding: 8px 0 12px;
-            box-shadow: 0 -2px 6px rgba(0,0,0,0.05); z-index: 100;
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            font-size: 0.65rem; color: #95a5a6; cursor: pointer;
-            padding: 4px 12px; border: none; background: none;
-        }
+        .bottom-nav { position: fixed; bottom:0; left:0; right:0; background: white; display: flex; justify-content: space-around; padding: 8px 0 12px; box-shadow: 0 -2px 6px rgba(0,0,0,0.05); z-index:100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; color: #95a5a6; cursor: pointer; padding: 4px 12px; border: none; background: none; }
         .nav-item i { font-size: 1.3rem; margin-bottom:2px; }
         .nav-item.active { color: var(--primary); }
-        .modal-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.4); display: flex; align-items: center;
-            justify-content: center; z-index: 200;
-        }
-        .modal-box {
-            background: white; border-radius: 16px; padding: 20px;
-            width: 90%; max-width: 450px; max-height: 80vh; overflow-y: auto;
-        }
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index:200; }
+        .modal-box { background: white; border-radius: 16px; padding: 20px; width: 90%; max-width: 450px; max-height: 80vh; overflow-y: auto; }
         .badge { padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; background: #ecf0f1; }
-        .reset-btn { position: absolute; right: 16px; top: 12px; font-size: 0.75rem; color: white; opacity: 0.8; }
     </style>
 </head>
 <body>
 <div id="app">
     <div class="header">
         <h1>🐾 宠物店管家</h1>
-        <span class="reset-btn" @click="resetDatabase">重置数据</span>
+        <span style="font-size:0.75rem; opacity:0.8;">v2.0</span>
     </div>
 
     <div class="container">
-        <!-- 收银台 -->
+        <!-- ========== 收银台 ========== -->
         <div v-show="currentPage==='pos'">
             <div class="card">
-                <div class="card-title">会员</div>
+                <div class="card-title">会员（可选）</div>
                 <div class="input-row">
-                    <input v-model="memberPhone" placeholder="手机号" @keyup.enter="selectMember">
-                    <button class="btn btn-primary" @click="selectMember">查询</button>
+                    <input v-model="memberPhone" placeholder="手机号" @keyup.enter="searchMember">
+                    <button class="btn btn-primary" @click="searchMember">查询</button>
                 </div>
                 <div v-if="currentMember" class="member-tag">
                     <span><strong>{{ currentMember.name }}</strong> 余额 ¥{{ currentMember.balance.toFixed(2) }}</span>
-                    <i class="fas fa-check-circle" style="color:var(--primary);"></i>
+                    <span class="badge">{{ currentMember.level }}</span>
                 </div>
             </div>
 
             <div class="card">
-                <button class="btn btn-primary btn-block" @click="openProductSearch" style="padding:14px;">
-                    <i class="fas fa-plus-circle"></i> 添加商品
-                </button>
+                <button class="btn btn-primary btn-block" @click="openProductSearch">➕ 添加商品 / 活体</button>
             </div>
 
+            <!-- 购物车 -->
             <div class="card" v-if="cart.length">
                 <div class="card-title">购物车</div>
                 <div v-for="(item,idx) in cart" :key="idx" class="cart-item">
                     <div>
-                        <div><strong>{{ item.name }}</strong> <span v-if="item.petId" class="badge">活体</span></div>
-                        <div style="font-size:0.8rem; color:var(--text-light);">x{{ item.qty }}</div>
+                        <strong>{{ item.name }}</strong>
+                        <span v-if="item.pet_individual_id" class="badge">活体</span>
+                        <div style="font-size:0.8rem; color:#7f8c8d;">x{{ item.qty }}</div>
                     </div>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <strong>¥{{ (item.price*item.qty).toFixed(2) }}</strong>
+                        <strong>¥{{ (item.price * item.qty).toFixed(2) }}</strong>
                         <button class="btn btn-sm btn-outline" @click="cart.splice(idx,1)"><i class="fas fa-times"></i></button>
                     </div>
                 </div>
             </div>
 
+            <!-- 结算栏 -->
             <div class="settle-bar">
                 <div style="flex:1;">
-                    <span class="cart-total">合计 ¥{{ cartTotal.toFixed(2) }}</span>
+                    <div class="cart-total">合计 ¥{{ cartTotal.toFixed(2) }}</div>
                     <div class="input-row" style="margin-top:6px;">
-                        <input type="number" v-model.number="discount" placeholder="折扣" style="width:80px;">
+                        <input type="number" v-model.number="discount" placeholder="折扣额" style="width:80px;" min="0">
                         <select v-model="paymentMethod">
                             <option>现金</option><option>微信</option><option>支付宝</option><option>会员余额</option>
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-primary" @click="checkout" :disabled="cart.length===0" style="font-size:1rem; padding:12px 20px;">
-                    结账
-                </button>
+                <button class="btn btn-primary" @click="checkout" :disabled="cart.length===0">结账</button>
             </div>
         </div>
 
-        <!-- 商品、会员、活体、库存管理页面保持不变，此处省略，使用之前优化版即可 -->
+        <!-- ========== 商品管理 ========== -->
+        <div v-show="currentPage==='products'">
+            <div class="card">
+                <button class="btn btn-primary btn-block" @click="openProductForm()">添加商品</button>
+            </div>
+            <div class="card" v-if="products.length">
+                <table>
+                    <tr><th>名称</th><th>类型</th><th>售价</th><th>库存</th><th></th></tr>
+                    <tr v-for="p in products" :key="p.id">
+                        <td>{{ p.name }}</td>
+                        <td>{{ typeLabel(p.type) }}</td>
+                        <td>¥{{ p.selling_price }}</td>
+                        <td>{{ p.stock_qty }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" @click="openProductForm(p)">编辑</button>
+                            <button class="btn btn-sm btn-danger" @click="deleteProduct(p.id)">删</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== 会员管理 ========== -->
+        <div v-show="currentPage==='members'">
+            <div class="card">
+                <button class="btn btn-primary btn-block" @click="openMemberForm()">添加会员</button>
+            </div>
+            <div class="card" v-if="members.length">
+                <table>
+                    <tr><th>姓名</th><th>手机</th><th>余额</th><th>积分</th><th></th></tr>
+                    <tr v-for="m in members" :key="m.id">
+                        <td>{{ m.name }}</td><td>{{ m.phone }}</td>
+                        <td>¥{{ m.balance.toFixed(2) }}</td><td>{{ m.points }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" @click="rechargeMember(m)">充值</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== 活体管理 ========== -->
+        <div v-show="currentPage==='pets'">
+            <div class="card">
+                <button class="btn btn-primary btn-block" @click="openPetForm()">添加活体</button>
+            </div>
+            <div class="card" v-if="pets.length">
+                <table>
+                    <tr><th>名称</th><th>品种</th><th>性别</th><th>状态</th><th></th></tr>
+                    <tr v-for="p in pets" :key="p.id">
+                        <td>{{ p.chip_no || p.id }}</td>
+                        <td>{{ p.product_id }}</td>
+                        <td>{{ p.gender }}</td>
+                        <td>{{ p.status }}</td>
+                        <td>
+                            <button v-if="p.status==='在售'" class="btn btn-sm btn-outline" @click="markPetSold(p.id)">售出</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== 库存盘点 ========== -->
+        <div v-show="currentPage==='inventory'">
+            <div class="card" v-if="inventory.length">
+                <table>
+                    <tr><th>商品</th><th>类型</th><th>当前库存</th></tr>
+                    <tr v-for="inv in inventory" :key="inv.id">
+                        <td>{{ inv.name }}</td>
+                        <td>{{ typeLabel(inv.type) }}</td>
+                        <td>{{ inv.stock_qty }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <!-- 底部导航（同样保留） -->
+    <!-- 底部导航 -->
     <div class="bottom-nav">
         <button class="nav-item" :class="{active:currentPage==='pos'}" @click="switchPage('pos')"><i class="fas fa-cash-register"></i>收银</button>
         <button class="nav-item" :class="{active:currentPage==='products'}" @click="switchPage('products')"><i class="fas fa-box"></i>商品</button>
@@ -178,33 +185,222 @@
         <button class="nav-item" :class="{active:currentPage==='inventory'}" @click="switchPage('inventory')"><i class="fas fa-chart-bar"></i>库存</button>
     </div>
 
-    <!-- 弹窗部分保持不变，这里省略 -->
+    <!-- 弹窗：添加商品到购物车 / 商品搜索 -->
+    <div class="modal-overlay" v-if="showProductModal" @click.self="showProductModal=false">
+        <div class="modal-box">
+            <h3>选择商品</h3>
+            <input v-model="searchKey" placeholder="搜索名称..." @input="filterProducts">
+            <div v-for="p in filteredProducts" :key="p.id" style="padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+                <span>{{ p.name }} ({{ typeLabel(p.type) }}) ¥{{ p.selling_price }}</span>
+                <button class="btn btn-sm btn-primary" @click="addToCart(p)">加入</button>
+            </div>
+            <button class="btn btn-block btn-outline" @click="showProductModal=false" style="margin-top:12px;">关闭</button>
+        </div>
+    </div>
+
+    <!-- 弹窗：商品/活体 编辑表单 -->
+    <div class="modal-overlay" v-if="showProductForm" @click.self="showProductForm=false">
+        <div class="modal-box">
+            <h3>{{ editingProduct ? '编辑' : '添加' }}商品</h3>
+            <input v-model="productForm.name" placeholder="名称">
+            <select v-model="productForm.type">
+                <option value="goods">普通商品</option>
+                <option value="pet">活体宠物</option>
+                <option value="service">服务</option>
+            </select>
+            <input v-model.number="productForm.selling_price" placeholder="售价" type="number">
+            <input v-if="productForm.type==='goods'" v-model.number="productForm.stock_qty" placeholder="库存" type="number">
+            <input v-model="productForm.category" placeholder="分类">
+            <button class="btn btn-primary btn-block" @click="saveProduct">保存</button>
+            <button class="btn btn-block btn-outline" @click="showProductForm=false">取消</button>
+        </div>
+    </div>
+
+    <!-- 弹窗：活体添加 -->
+    <div class="modal-overlay" v-if="showPetForm" @click.self="showPetForm=false">
+        <div class="modal-box">
+            <h3>添加活体</h3>
+            <select v-model="petForm.product_id">
+                <option v-for="p in petProducts" :value="p.id">{{ p.name }}</option>
+            </select>
+            <input v-model="petForm.chip_no" placeholder="芯片号">
+            <input v-model="petForm.birthday" placeholder="生日 (YYYY-MM-DD)">
+            <select v-model="petForm.gender"><option>公</option><option>母</option><option>未知</option></select>
+            <input v-model.number="petForm.cost_price" placeholder="成本价" type="number">
+            <input v-model.number="petForm.selling_price" placeholder="售价" type="number">
+            <button class="btn btn-primary btn-block" @click="savePet">保存</button>
+            <button class="btn btn-block btn-outline" @click="showPetForm=false">取消</button>
+        </div>
+    </div>
+
+    <!-- 弹窗：会员添加/充值 -->
+    <div class="modal-overlay" v-if="showMemberModal" @click.self="showMemberModal=false">
+        <div class="modal-box">
+            <h3 v-if="!rechargeTarget">添加会员</h3>
+            <h3 v-else>为 {{ rechargeTarget.name }} 充值</h3>
+            <input v-if="!rechargeTarget" v-model="memberForm.name" placeholder="姓名">
+            <input v-if="!rechargeTarget" v-model="memberForm.phone" placeholder="手机号">
+            <input v-model.number="memberForm.amount" placeholder="充值金额" type="number" v-if="rechargeTarget">
+            <button class="btn btn-primary btn-block" @click="rechargeTarget ? doRecharge() : saveMember()">
+                {{ rechargeTarget ? '确认充值' : '添加' }}
+            </button>
+            <button class="btn btn-block btn-outline" @click="showMemberModal=false; rechargeTarget=null;">取消</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // 注册 Service Worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/static/sw.js');
     }
 </script>
 <script>
-    // Vue 实例代码，需要包含 resetDatabase 方法
-    const app = Vue.createApp({
-        data() { /* ... 你的原有 data */ },
-        computed: { /* ... */ },
-        methods: {
-            // ... 原有方法 ...
-            async resetDatabase() {
-                if (confirm('确定要重置所有数据吗？此操作不可恢复！')) {
-                    await axios.post('/api/reset');
-                    alert('数据已重置，请刷新页面');
-                    location.reload();
-                }
+    const { createApp } = Vue;
+    createApp({
+        data() {
+            return {
+                currentPage: 'pos',
+                memberPhone: '',
+                currentMember: null,
+                cart: [],
+                discount: 0,
+                paymentMethod: '现金',
+                products: [],
+                members: [],
+                pets: [],
+                inventory: [],
+                showProductModal: false,
+                searchKey: '',
+                showProductForm: false,
+                editingProduct: null,
+                productForm: { name:'', type:'goods', selling_price:0, stock_qty:0, category:'' },
+                showPetForm: false,
+                petForm: { product_id:'', chip_no:'', birthday:'', gender:'未知', cost_price:0, selling_price:0 },
+                showMemberModal: false,
+                memberForm: { name:'', phone:'', amount:0 },
+                rechargeTarget: null,
             }
         },
-        mounted() { this.loadProducts(); }
-    });
-    app.mount('#app');
+        computed: {
+            cartTotal() { return this.cart.reduce((s,i)=> s + i.price*i.qty, 0); },
+            filteredProducts() {
+                if (!this.searchKey) return this.products;
+                return this.products.filter(p => p.name.includes(this.searchKey));
+            },
+            petProducts() { return this.products.filter(p => p.type === 'pet'); }
+        },
+        methods: {
+            typeLabel(type) { return ({goods:'商品',pet:'活体',service:'服务'})[type] || type; },
+            switchPage(page) { this.currentPage = page; this.loadPageData(); },
+            async loadPageData() {
+                try {
+                    if (this.currentPage === 'products' || this.currentPage === 'pos') {
+                        let res = await axios.get('/api/products');
+                        this.products = res.data;
+                    }
+                    if (this.currentPage === 'members') {
+                        let res = await axios.get('/api/members');
+                        this.members = res.data;
+                    }
+                    if (this.currentPage === 'pets') {
+                        let res = await axios.get('/api/pet_individuals');
+                        this.pets = res.data;
+                    }
+                    if (this.currentPage === 'inventory') {
+                        let res = await axios.get('/api/inventory');
+                        this.inventory = res.data;
+                    }
+                } catch(e) { console.error(e); }
+            },
+            async searchMember() {
+                if (!this.memberPhone) return;
+                try {
+                    let res = await axios.get('/api/members/search', { params: { phone: this.memberPhone } });
+                    if (res.data && res.data.id) this.currentMember = res.data;
+                    else { alert('未找到会员'); this.currentMember = null; }
+                } catch(e) { alert('查询失败'); this.currentMember = null; }
+            },
+            openProductSearch() { this.loadPageData(); this.showProductModal = true; },
+            addToCart(product) {
+                if (product.type === 'pet') {
+                    // 需要选择具体活体个体，简化处理：直接加入，但结账时需 pet_individual_id
+                    // 这里你可以扩展一个选择活体个体的弹窗，现在先简单加入并提示手动输入
+                    alert('活体请在活体管理中标记售出，或此处暂只支持商品');
+                    return;
+                }
+                let existing = this.cart.find(i => i.product_id === product.id && !i.pet_individual_id);
+                if (existing) existing.qty++;
+                else this.cart.push({ product_id: product.id, pet_individual_id: null, name: product.name, price: product.selling_price, qty: 1 });
+                this.showProductModal = false;
+            },
+            async checkout() {
+                if (this.cart.length===0) return;
+                let payload = {
+                    member_phone: this.currentMember ? this.currentMember.phone : null,
+                    discount: this.discount,
+                    payment: this.paymentMethod,
+                    items: this.cart.map(i => ({ product_id: i.product_id, pet_individual_id: i.pet_individual_id, qty: i.qty, price: i.price }))
+                };
+                try {
+                    let res = await axios.post('/api/sale', payload);
+                    alert('结账成功！订单号：' + res.data.order_no);
+                    this.cart = []; this.discount = 0; this.currentMember = null; this.memberPhone = '';
+                    this.loadPageData();
+                } catch(e) { alert(e.response?.data?.error || '结账失败'); }
+            },
+            // 商品管理
+            openProductForm(product=null) {
+                if (product) { this.editingProduct = product; this.productForm = { name:product.name, type:product.type, selling_price:product.selling_price, stock_qty:product.stock_qty||0, category:product.category||'' }; }
+                else { this.editingProduct = null; this.productForm = { name:'', type:'goods', selling_price:0, stock_qty:0, category:'' }; }
+                this.showProductForm = true;
+            },
+            async saveProduct() {
+                let data = this.productForm;
+                try {
+                    if (this.editingProduct) await axios.put('/api/products/'+this.editingProduct.id, data);
+                    else await axios.post('/api/products', data);
+                    this.showProductForm = false;
+                    this.loadPageData();
+                } catch(e) { alert('保存失败'); }
+            },
+            async deleteProduct(id) {
+                if (!confirm('确认删除？')) return;
+                await axios.delete('/api/products/'+id);
+                this.loadPageData();
+            },
+            // 活体
+            openPetForm() { this.loadPageData(); this.showPetForm = true; },
+            async savePet() {
+                try {
+                    await axios.post('/api/pet_individuals', this.petForm);
+                    this.showPetForm = false;
+                    this.loadPageData();
+                } catch(e) { alert('添加失败'); }
+            },
+            async markPetSold(id) {
+                await axios.put('/api/pet_individuals/'+id+'/status', { status: '已售' });
+                this.loadPageData();
+            },
+            // 会员
+            openMemberForm() { this.rechargeTarget = null; this.memberForm = { name:'', phone:'', amount:0 }; this.showMemberModal = true; },
+            async saveMember() {
+                try {
+                    await axios.post('/api/members', this.memberForm);
+                    this.showMemberModal = false;
+                    this.loadPageData();
+                } catch(e) { alert(e.response?.data?.error || '添加失败'); }
+            },
+            rechargeMember(m) { this.rechargeTarget = m; this.memberForm.amount = 0; this.showMemberModal = true; },
+            async doRecharge() {
+                try {
+                    await axios.post('/api/members/'+this.rechargeTarget.id+'/recharge', { amount: this.memberForm.amount });
+                    this.showMemberModal = false; this.rechargeTarget = null;
+                    this.loadPageData();
+                } catch(e) { alert('充值失败'); }
+            }
+        },
+        mounted() { this.loadPageData(); }
+    }).mount('#app');
 </script>
 </body>
 </html>
