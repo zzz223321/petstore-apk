@@ -16,3 +16,5 @@ p4a.branch = master
 android.accept_sdk_license = True
 android.sdk_path = /home/runner/android-sdk
 android.skip_update = True
+android.bootstrap = webview
+log_level = 2
